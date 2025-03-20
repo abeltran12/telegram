@@ -1,36 +1,47 @@
-# This is a basic workflow to help you get started with Actions
+name: Notifier
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  notifyTelegram:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+    - name: Send custom message
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          🔔 **GitHub Notification** 🔔
+          
+          📌 **Evento:** ${{ github.event_name }}
+          👤 **Usuario:** ${{ github.actor }}
+          📂 **Repositorio:** ${{ github.repository }}
+          🔄 **Acción:** ${{ github.event.action }}
+          🔀 **Rama:** ${{ github.ref }}
+          
+          📜 **Último commit:**
+          🆔 **SHA:** ${{ github.sha }}
+          📝 **Mensaje:** ${{ github.event.head_commit.message }}
+          🕒 **Fecha:** ${{ github.event.head_commit.timestamp }}
+          
+          📎 **Ver cambios:** [🔗 Commit](${{
+            github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+          📢 **Detalles adicionales:**
+          - 🏷️ **Tipo de evento:** ${{ github.event_name }}
+          - 🏗️ **Workflow ejecutado:** ${{ github.workflow }}
+          - 🖥️ **Job ejecutado:** ${{ github.job }}
+          - 🛠️ **Ejecutado en:** ${{ runner.os }}
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          {% if github.event_name == 'pull_request' %}
+          🔀 **Pull Request:**
+          - 🆕 **Título:** ${{ github.event.pull_request.title }}
+          - 📝 **Descripción:** ${{ github.event.pull_request.body }}
+          - 🔍 **PR URL:** [🔗 Ver PR](${{
+            github.event.pull_request.html_url }})
+          {% endif %}
