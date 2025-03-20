@@ -21,7 +21,7 @@ jobs:
           📌 **Evento:** ${{ github.event_name }}
           👤 **Usuario:** ${{ github.actor }}
           📂 **Repositorio:** ${{ github.repository }}
-          🔄 **Acción:** ${{ github.event.action }}
+          🔄 **Acción:** ${{ github.event.action || 'N/A' }}
           🔀 **Rama:** ${{ github.ref }}
           
           📜 **Último commit:**
@@ -38,10 +38,15 @@ jobs:
           - 🖥️ **Job ejecutado:** ${{ github.job }}
           - 🛠️ **Ejecutado en:** ${{ runner.os }}
 
-          {% if github.event_name == 'pull_request' %}
-          🔀 **Pull Request:**
+    - name: Send Pull Request details
+      if: github.event_name == 'pull_request'
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TELEGRAM_TO }}
+        token: ${{ secrets.TELEGRAM_TOKEN }}
+        message: |
+          🔀 **Pull Request Detalles:**
           - 🆕 **Título:** ${{ github.event.pull_request.title }}
-          - 📝 **Descripción:** ${{ github.event.pull_request.body }}
+          - 📝 **Descripción:** ${{ github.event.pull_request.body || 'Sin descripción' }}
           - 🔍 **PR URL:** [🔗 Ver PR](${{
             github.event.pull_request.html_url }})
-          {% endif %}
