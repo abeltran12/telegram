@@ -22,7 +22,7 @@ jobs:
           👤 **Usuario:** ${{ github.actor }}
           📂 **Repositorio:** ${{ github.repository }}
           🔄 **Acción:** ${{ github.event.action || 'N/A' }}
-          🔀 **Rama:** ${{ github.ref }}
+          🔀 **Rama:** ${{ github.ref_name }}
           
           📜 **Último commit:**
           🆔 **SHA:** ${{ github.sha }}
